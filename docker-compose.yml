@@ -24,18 +24,8 @@ services:
       - "8000:8000"
     depends_on:
       - db
-    environment:
-      - SECRET_KEY=${SECRET_KEY}
-      - DEBUG=${DEBUG}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - SECURE_HSTS_SECONDS=${SECURE_HSTS_SECONDS}
-      - DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS=${DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS}
-      - DJANGO_SECURE_HSTS_PRELOAD=${DJANGO_SECURE_HSTS_PRELOAD}
+    env_file:
+      - .env
     restart: always
 
 volumes:
