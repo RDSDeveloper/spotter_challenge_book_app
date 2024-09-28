@@ -5,7 +5,7 @@ ALLOWED_HOSTS=*
 DB_NAME=test_db
 DB_USER=test_db_user
 DB_PASSWORD="Create your database password"
-DB_HOST=test_db_host
+DB_HOST=db
 DB_PORT=5432
 
 SECURE_HSTS_SECONDS=2592000
