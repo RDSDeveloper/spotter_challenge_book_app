@@ -55,7 +55,6 @@ THIRD_PARTY_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "drf_spectacular",
-    "whitenoise.runserver_nostatic",
 ]
 
 LOCAL_APPS = [
@@ -156,7 +155,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "uploads")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # User model selection
-AUTH_USER_MODEL = "accounts.CustomUser"
+# AUTH_USER_MODEL = "accounts.CustomUser"
 
 # Allauth settings
 AUTHENTICATION_BACKENDS = (
