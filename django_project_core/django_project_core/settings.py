@@ -51,9 +51,11 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "corsheaders",
     "debug_toolbar",
+    "dj_rest_auth",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "dj_rest_auth.registration",
     "drf_spectacular",
 ]
 
