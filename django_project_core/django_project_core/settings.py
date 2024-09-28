@@ -154,9 +154,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "uploads")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# User model selection
-# AUTH_USER_MODEL = "accounts.CustomUser"
-
 # Allauth settings
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
