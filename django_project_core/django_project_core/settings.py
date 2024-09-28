@@ -11,17 +11,13 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-import os
 import environ
 from django.core.management.utils import get_random_secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
+# Initialize environment variables
 env = environ.Env(
     # set casting, default value
     DEBUG=(bool, False),
@@ -30,14 +26,13 @@ env = environ.Env(
 )
 
 # reading .env file
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+environ.Env.read_env(env_file=os.path.join(BASE_DIR, ".env"))
 
 SECRET_KEY = env("SECRET_KEY")
 
 DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
-
 
 # Application definition
 CORE_APPS = [
@@ -95,21 +90,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "django_project_core.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT"),
+        "NAME": env("DB_NAME"),
+        "USER": env("DB_USER"),
+        "PASSWORD": env("DB_PASSWORD"),
+        "HOST": env("DB_HOST"),
+        "PORT": env("DB_PORT"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -129,7 +122,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -140,7 +132,6 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
@@ -158,7 +149,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # User model selection
 AUTH_USER_MODEL = "accounts.CustomUser"
-
 
 # Allauth settings
 AUTHENTICATION_BACKENDS = (
@@ -185,8 +175,8 @@ REST_FRAMEWORK = {
 
 # Schema documentation configuration
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Kami",
-    "DESCRIPTION": "Kami Airlines aircraft passenger capacity api.",
+    "TITLE": "Spotter",
+    "DESCRIPTION": "Spotter recommendation api.",
     "VERSION": f"v{API_VERSION}",
     "SERVE_INCLUDE_SCHEMA": False,
 }
