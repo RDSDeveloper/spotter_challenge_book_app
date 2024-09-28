@@ -48,6 +48,13 @@ CORE_APPS = [
 
 THIRD_PARTY_APPS = [
     "rest_framework",
+    "corsheaders",
+    "debug_toolbar",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "drf_spectacular",
+    "whitenoise.runserver_nostatic",
 ]
 
 LOCAL_APPS = [
