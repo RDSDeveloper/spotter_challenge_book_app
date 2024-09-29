@@ -11,6 +11,7 @@ from .serializers import (
     FavouriteBookSerializer,
     AddToFavoritesSerializer,
     RemoveFromFavoritesSerializer,
+    RecommendedBookSerializer,
 )
 from .mixins import CustomPermissionsMixin
 
@@ -55,6 +56,18 @@ class AddToFavoritesView(APIView):
             book_id = serializer.validated_data.get("book_id")
             try:
                 book = Book.objects.get(id=book_id)
+
+                # Check if the book is already in the user's favorites
+                if FavouriteBook.objects.filter(user=user, book=book).exists():
+                    recommendations = self.get_recommendations(user)
+                    return Response(
+                        {
+                            "error": "This book is already in your favorites.",
+                            "recommendations": recommendations,
+                        },
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
                 FavouriteBook.objects.create(user=user, book=book)
 
                 # Get recommendations
@@ -116,7 +129,7 @@ class AddToFavoritesView(APIView):
         other_books_list = list(other_books)
         similar_books = [other_books_list[i] for i in similar_books_indices]
 
-        return BookSerializer(similar_books, many=True).data
+        return RecommendedBookSerializer(similar_books, many=True).data
 
 
 class RemoveFromFavoritesView(APIView):
@@ -130,20 +143,23 @@ class RemoveFromFavoritesView(APIView):
             book_id = serializer.validated_data.get("book_id")
             try:
                 book = Book.objects.get(id=book_id)
-                favourite_book = FavouriteBook.objects.get(user=user, book=book)
-                favourite_book.delete()
-                return Response(
-                    {"status": "book removed from favorites"},
-                    status=status.HTTP_204_NO_CONTENT,
-                )
+
+                # Check if the book is in the user's favorites
+                try:
+                    favourite_book = FavouriteBook.objects.get(user=user, book=book)
+                    favourite_book.delete()
+                    return Response(
+                        {"status": "book removed from favorites"},
+                        status=status.HTTP_204_NO_CONTENT,
+                    )
+                except FavouriteBook.DoesNotExist:
+                    return Response(
+                        {"error": "This book is not in your favorites."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
             except Book.DoesNotExist:
                 return Response(
                     {"error": "Book not found"}, status=status.HTTP_404_NOT_FOUND
-                )
-            except FavouriteBook.DoesNotExist:
-                return Response(
-                    {"error": "Favorite book not found"},
-                    status=status.HTTP_404_NOT_FOUND,
                 )
             except Exception as e:
                 return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -156,5 +172,14 @@ class ListFavoriteBooksView(APIView):
     def get(self, request):
         user = request.user
         favourite_books = FavouriteBook.objects.filter(user=user)
+
+        if not favourite_books.exists():
+            return Response(
+                {
+                    "message": "You have no favorite books. Start adding some! You can have up to 20 favorite books."
+                },
+                status=status.HTTP_200_OK,
+            )
+
         serializer = FavouriteBookSerializer(favourite_books, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

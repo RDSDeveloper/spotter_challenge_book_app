@@ -23,5 +23,14 @@ class FavouriteBookSerializer(serializers.ModelSerializer):
 class AddToFavoritesSerializer(serializers.Serializer):
     book_id = serializers.IntegerField()
 
+
 class RemoveFromFavoritesSerializer(serializers.Serializer):
     book_id = serializers.IntegerField()
+
+
+class RecommendedBookSerializer(serializers.ModelSerializer):
+    author = serializers.StringRelatedField()
+
+    class Meta:
+        model = Book
+        fields = ["title", "author"]
