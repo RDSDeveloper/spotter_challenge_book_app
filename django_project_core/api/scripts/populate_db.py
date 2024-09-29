@@ -45,11 +45,13 @@ try:
 except Exception as e:
     print(f"Error loading books_partial.json: {e}")
 
+
 def validate_date(date_str):
     try:
         return datetime.strptime(date_str, "%Y-%m-%d").date()
     except ValueError:
         return None
+
 
 # Populate Author model
 try:
@@ -69,7 +71,7 @@ try:
                     "gender": author_data.get("gender", ""),
                     "image_url": author_data.get("image_url", ""),
                     "fans_count": author_data.get("fans_count", 0),
-                }
+                },
             )
             if created:
                 print(f"Author created: {author.name}")
@@ -95,7 +97,9 @@ try:
             # Validate and format the published_date
             published_date = validate_date(book_data.get("original_publication_date"))
             if not published_date:
-                print(f"Skipping book '{book_data.get('title')}' due to invalid date format")
+                print(
+                    f"Skipping book '{book_data.get('title')}' due to invalid date format"
+                )
                 continue
 
             try:
@@ -117,12 +121,16 @@ try:
                         "edition_information": book_data.get("edition_information", ""),
                         "image_url": book_data.get("image_url", ""),
                         "publisher": book_data.get("publisher", ""),
-                        "num_pages": int(book_data.get("num_pages", 0)) if book_data.get("num_pages") else 0,
+                        "num_pages": (
+                            int(book_data.get("num_pages", 0))
+                            if book_data.get("num_pages")
+                            else 0
+                        ),
                         "series_id": book_data.get("series_id", ""),
                         "series_name": book_data.get("series_name", ""),
                         "series_position": book_data.get("series_position", ""),
                         "description": book_data.get("description", ""),
-                    }
+                    },
                 )
                 if created:
                     print(f"Book created: {book.title}")

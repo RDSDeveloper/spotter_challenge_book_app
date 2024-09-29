@@ -5,7 +5,7 @@ from .views import (
     BookViewSet,
     AddToFavoritesView,
     RemoveFromFavoritesView,
-    ListFavoriteBooksView,  
+    ListFavoriteBooksView,
 )
 
 router = DefaultRouter()
@@ -19,5 +19,5 @@ urlpatterns = router.urls + [
         RemoveFromFavoritesView.as_view(),
         name="remove-from-favorites",
     ),
-    path("favorites/", ListFavoriteBooksView.as_view(), name="list-favorites"),  
+    path("favorites/", ListFavoriteBooksView.as_view(), name="list-favorites"),
 ]
