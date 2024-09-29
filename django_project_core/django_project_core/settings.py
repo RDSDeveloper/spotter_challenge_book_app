@@ -38,11 +38,11 @@ CORE_APPS = [
 
 THIRD_PARTY_APPS = [
     "rest_framework",
+    "dj_rest_auth",
     "rest_framework.authtoken",
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "debug_toolbar",
-    "dj_rest_auth",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -163,6 +163,12 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 API_VERSION = "0.1.0"
 
 # Rest Framework configurations
+REST_AUTH = {
+    "USE_JWT": True,
+    "JWT_AUTH_COOKIE": "access_token",
+    "JWT_AUTH_REFRESH_COOKIE": "refresh_token",
+}
+
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.AllowAny",
@@ -172,6 +178,8 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
+
+REST_USE_JWT = True
 
 # Schema documentation configuration
 SPECTACULAR_SETTINGS = {
