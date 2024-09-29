@@ -1,6 +1,8 @@
 from rest_framework import viewsets, status, permissions, filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Author, Book, FavouriteBook
 from .serializers import (
@@ -40,12 +42,29 @@ class AddToFavoritesView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             user = request.user
+
+            # Check if the user already has 20 favorite books
+            if FavouriteBook.objects.filter(user=user).count() >= 20:
+                return Response(
+                    {
+                        "error": "You can only have up to 20 favorite books. Please remove some before adding new ones."
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
             book_id = serializer.validated_data.get("book_id")
             try:
                 book = Book.objects.get(id=book_id)
                 FavouriteBook.objects.create(user=user, book=book)
+
+                # Get recommendations
+                recommendations = self.get_recommendations(user)
+
                 return Response(
-                    {"status": "book added to favorites"},
+                    {
+                        "status": "book added to favorites",
+                        "recommendations": recommendations,
+                    },
                     status=status.HTTP_201_CREATED,
                 )
             except Book.DoesNotExist:
@@ -55,6 +74,46 @@ class AddToFavoritesView(APIView):
             except Exception as e:
                 return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_recommendations(self, user):
+        favorite_books = FavouriteBook.objects.filter(user=user).values_list(
+            "book", flat=True
+        )
+        favorite_books = Book.objects.filter(id__in=favorite_books)
+
+        if not favorite_books.exists():
+            return []
+
+        # Combine all descriptions of favorite books
+        favorite_books_descriptions = " ".join(
+            [book.description for book in favorite_books if book.description]
+        )
+
+        # Get all books excluding the user's favorite books
+        other_books = Book.objects.exclude(id__in=favorite_books)
+
+        if not other_books.exists():
+            return []
+
+        # Combine all descriptions of other books
+        other_books_descriptions = [
+            book.description for book in other_books if book.description
+        ]
+
+        # Use TF-IDF Vectorizer to convert text to vectors
+        vectorizer = TfidfVectorizer().fit_transform(
+            [favorite_books_descriptions] + other_books_descriptions
+        )
+        vectors = vectorizer.toarray()
+
+        # Calculate cosine similarity
+        cosine_similarities = cosine_similarity(vectors[0:1], vectors[1:]).flatten()
+
+        # Get top 5 similar books
+        similar_books_indices = cosine_similarities.argsort()[-5:][::-1]
+        similar_books = [other_books[i] for i in similar_books_indices]
+
+        return BookSerializer(similar_books, many=True).data
 
 
 class RemoveFromFavoritesView(APIView):
