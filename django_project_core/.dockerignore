@@ -1,16 +1,46 @@
+# Environment variables
 .env
 
+# IDE and editor settings
 .idea
+.vscode
 *.swp
 *.swo
 *.swn
-.vscode
 
+# Python artifacts
 *.pyc
 *.pyo
 *.pyd
-__pycache__
+__pycache__/
 *.py[co]
 *.egg-info/
 dist/
 build/
+
+# Virtual environments
+venv/
+.venv/
+
+# Node modules
+node_modules/
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Version control
+.git/
+.gitignore
+
+# Data directory
+django_project_core/data/*
+django_project_core/data/
+
+# Django migrations
+**/migrations/*.py
+!**/migrations/__init__.py
+
+# Django debug toolbar
+django_debug_toolbar/
+
