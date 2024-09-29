@@ -149,8 +149,15 @@ class RemoveFromFavoritesView(APIView):
                     favourite_book = FavouriteBook.objects.get(user=user, book=book)
                     favourite_book.delete()
                     return Response(
-                        {"status": "book removed from favorites"},
-                        status=status.HTTP_204_NO_CONTENT,
+                        {
+                            "status": "book removed from favorites",
+                            "book": {
+                                "id": book.id,
+                                "title": book.title,
+                                "author": book.author.name,
+                            },
+                        },
+                        status=status.HTTP_200_OK,
                     )
                 except FavouriteBook.DoesNotExist:
                     return Response(
