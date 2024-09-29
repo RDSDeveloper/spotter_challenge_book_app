@@ -21,10 +21,7 @@ class FavouriteBookSerializer(serializers.ModelSerializer):
 
 
 class AddToFavoritesSerializer(serializers.Serializer):
-    model = FavouriteBook
-    fields = ["user", "book"]
-
+    book_id = serializers.IntegerField()
 
 class RemoveFromFavoritesSerializer(serializers.Serializer):
-    model = FavouriteBook
-    fields = ["user", "book"]
+    book_id = serializers.IntegerField()
