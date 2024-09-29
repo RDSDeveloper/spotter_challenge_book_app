@@ -3,6 +3,13 @@ import environ
 import os
 from django.core.management.utils import get_random_secret_key
 from datetime import timedelta
+import socket
+
+hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+INTERNAL_IPS = ["127.0.0.1"]
+
+# Add Docker internal IPs
+INTERNAL_IPS += [ip[:-1] + "1" for ip in ips]
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -203,11 +210,7 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
 # Preload HSTS in supported browsers
 SECURE_HSTS_PRELOAD = env.bool("DJANGO_SECURE_HSTS_PRELOAD", default=True)
 
-# Debug toolbar settings
-# DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": lambda _request: DEBUG}
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
+
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",

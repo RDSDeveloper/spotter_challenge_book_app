@@ -24,14 +24,14 @@ class AuthorViewSet(CustomPermissionsMixin, viewsets.ModelViewSet):
 
 
 class BookViewSet(CustomPermissionsMixin, viewsets.ModelViewSet):
-    queryset = Book.objects.all()
+    queryset = Book.objects.select_related("author").all()
     serializer_class = BookSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     search_fields = ["title", "author__name"]
 
 
 class FavouriteBookViewSet(CustomPermissionsMixin, viewsets.ModelViewSet):
-    queryset = FavouriteBook.objects.all()
+    queryset = FavouriteBook.objects.select_related("book__author").all()
     serializer_class = FavouriteBookSerializer
 
 
@@ -76,6 +76,11 @@ class AddToFavoritesView(APIView):
                 return Response(
                     {
                         "status": "book added to favorites",
+                        "book": {
+                            "id": book.id,
+                            "title": book.title,
+                            "author": book.author.name,
+                        },
                         "recommendations": recommendations,
                     },
                     status=status.HTTP_201_CREATED,
@@ -175,10 +180,13 @@ class RemoveFromFavoritesView(APIView):
 
 class ListFavoriteBooksView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = FavouriteBookSerializer  
 
     def get(self, request):
         user = request.user
-        favourite_books = FavouriteBook.objects.filter(user=user)
+        favourite_books = FavouriteBook.objects.filter(user=user).select_related(
+            "book__author"
+        )
 
         if not favourite_books.exists():
             return Response(
@@ -188,5 +196,5 @@ class ListFavoriteBooksView(APIView):
                 status=status.HTTP_200_OK,
             )
 
-        serializer = FavouriteBookSerializer(favourite_books, many=True)
+        serializer = self.serializer_class(favourite_books, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
