@@ -111,7 +111,10 @@ class AddToFavoritesView(APIView):
 
         # Get top 5 similar books
         similar_books_indices = cosine_similarities.argsort()[-5:][::-1]
-        similar_books = [other_books[i] for i in similar_books_indices]
+
+        # Convert other_books QuerySet to a list
+        other_books_list = list(other_books)
+        similar_books = [other_books_list[i] for i in similar_books_indices]
 
         return BookSerializer(similar_books, many=True).data
 
