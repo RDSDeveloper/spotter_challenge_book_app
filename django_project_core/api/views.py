@@ -6,21 +6,25 @@ from .models import Author, Book, FavouriteBook
 from .serializers import AuthorSerializer, BookSerializer, FavouriteBookSerializer
 from .mixins import CustomPermissionsMixin
 
+
 class AuthorViewSet(CustomPermissionsMixin, viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    search_fields = ['name']
+    search_fields = ["name"]
+
 
 class BookViewSet(CustomPermissionsMixin, viewsets.ModelViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    search_fields = ['title', 'author__name']
+    search_fields = ["title", "author__name"]
+
 
 class FavouriteBookViewSet(CustomPermissionsMixin, viewsets.ModelViewSet):
     queryset = FavouriteBook.objects.all()
     serializer_class = FavouriteBookSerializer
+
 
 class AddToFavoritesView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -40,6 +44,7 @@ class AddToFavoritesView(APIView):
             )
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class RemoveFromFavoritesView(APIView):
     permission_classes = [permissions.IsAuthenticated]
